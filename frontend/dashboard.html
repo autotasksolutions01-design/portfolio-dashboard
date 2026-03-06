@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body class="dashboard-page">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">&#9650;</span>
+      <span class="logo-text">Portfolio</span>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-item active" data-section="overview">
+        <span class="nav-icon">&#9632;</span> Overview
+      </li>
+      <li class="nav-item" data-section="assets">
+        <span class="nav-icon">&#9670;</span> Assets
+      </li>
+    </ul>
+    <div class="sidebar-footer">
+      <span id="nav-username" class="nav-user"></span>
+      <button id="logout-btn" class="btn btn-ghost btn-sm">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="top-bar">
+      <h1 id="section-title">Overview</h1>
+      <div class="top-bar-actions">
+        <span class="last-updated" id="last-updated">—</span>
+        <button id="refresh-btn" class="btn btn-ghost btn-sm">&#8635; Refresh</button>
+        <button id="add-asset-btn" class="btn btn-primary btn-sm">+ Add Asset</button>
+      </div>
+    </header>
+
+    <!-- Overview Section -->
+    <section id="section-overview" class="content-section active">
+      <div class="summary-cards">
+        <div class="card summary-card">
+          <div class="card-label">Total Value</div>
+          <div class="card-value" id="total-value">—</div>
+        </div>
+        <div class="card summary-card">
+          <div class="card-label">Total Cost Basis</div>
+          <div class="card-value" id="total-cost">—</div>
+        </div>
+        <div class="card summary-card">
+          <div class="card-label">Total P&amp;L</div>
+          <div class="card-value" id="total-pnl">—</div>
+          <div class="card-sub" id="total-pnl-pct">—</div>
+        </div>
+        <div class="card summary-card">
+          <div class="card-label">Assets</div>
+          <div class="card-value" id="asset-count">—</div>
+        </div>
+      </div>
+
+      <!-- Allocation by type -->
+      <div class="section-row">
+        <div class="card allocation-card">
+          <h3 class="card-title">Allocation by Type</h3>
+          <div id="allocation-bars"></div>
+        </div>
+        <div class="card top-movers-card">
+          <h3 class="card-title">Top Movers (24h)</h3>
+          <div id="top-movers"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Assets Section -->
+    <section id="section-assets" class="content-section">
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="crypto">Crypto</button>
+        <button class="filter-btn" data-filter="stock">Stocks</button>
+        <button class="filter-btn" data-filter="forex">Forex</button>
+        <button class="filter-btn" data-filter="cash">Cash</button>
+      </div>
+      <div class="card table-card">
+        <table id="assets-table">
+          <thead>
+            <tr>
+              <th>Asset</th>
+              <th>Type</th>
+              <th>Quantity</th>
+              <th>Avg Buy</th>
+              <th>Current Price</th>
+              <th>Value</th>
+              <th>P&amp;L</th>
+              <th>24h</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="assets-tbody">
+            <tr><td colspan="9" class="loading-row">Loading assets...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Add/Edit Asset Modal -->
+  <div id="asset-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="modal-title">Add Asset</h2>
+        <button class="modal-close" id="modal-close-btn">&times;</button>
+      </div>
+      <form id="asset-form">
+        <input type="hidden" id="asset-id" value="" />
+        <div class="form-row">
+          <div class="form-group">
+            <label for="asset-type">Type</label>
+            <select id="asset-type" required>
+              <option value="crypto">Crypto</option>
+              <option value="stock">Stock / ETF</option>
+              <option value="forex">Forex</option>
+              <option value="cash">Cash / Stablecoin</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="asset-symbol">Symbol</label>
+            <input type="text" id="asset-symbol" placeholder="BTC, AAPL, EUR..." required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="asset-name">Name</label>
+            <input type="text" id="asset-name" placeholder="Bitcoin, Apple Inc..." required />
+          </div>
+          <div class="form-group" id="coingecko-group">
+            <label for="asset-coingecko">CoinGecko ID <small>(for crypto)</small></label>
+            <input type="text" id="asset-coingecko" placeholder="bitcoin, ethereum..." />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="asset-quantity">Quantity</label>
+            <input type="number" id="asset-quantity" step="any" min="0" placeholder="0.00" required />
+          </div>
+          <div class="form-group">
+            <label for="asset-avg-price">Avg Buy Price (USD)</label>
+            <input type="number" id="asset-avg-price" step="any" min="0" placeholder="0.00" required />
+          </div>
+        </div>
+        <div id="asset-form-error" class="error-msg hidden"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="modal-cancel-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Asset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
