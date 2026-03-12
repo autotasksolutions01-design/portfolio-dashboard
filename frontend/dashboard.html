@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portfolio Dashboard</title>
   <link rel="stylesheet" href="/static/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 </head>
 <body class="dashboard-page">
 
@@ -20,6 +21,9 @@
       </li>
       <li class="nav-item" data-section="assets">
         <span class="nav-icon">&#9670;</span> Assets
+      </li>
+      <li class="nav-item" data-section="market">
+        <span class="nav-icon">&#9685;</span> Market
       </li>
     </ul>
     <div class="sidebar-footer">
@@ -107,6 +111,31 @@
       </div>
     </section>
 
+    <!-- Market Section -->
+    <section id="section-market" class="content-section">
+      <!-- Ticker strip -->
+      <div class="ticker-strip" id="ticker-strip">
+        <div class="ticker-loading">Connecting to Binance...</div>
+      </div>
+
+      <!-- Coin selector -->
+      <div class="filter-bar market-filter-bar">
+        <span class="filter-label">Charts:</span>
+        <button class="filter-btn active" data-coin="BTCUSDT">BTC</button>
+        <button class="filter-btn" data-coin="ETHUSDT">ETH</button>
+        <button class="filter-btn" data-coin="SOLUSDT">SOL</button>
+        <button class="filter-btn" data-coin="BNBUSDT">BNB</button>
+        <button class="filter-btn" data-coin="XRPUSDT">XRP</button>
+        <button class="filter-btn" data-coin="ADAUSDT">ADA</button>
+        <div class="ws-status" id="ws-status">
+          <span class="ws-dot"></span><span class="ws-label">Live</span>
+        </div>
+      </div>
+
+      <!-- Charts grid -->
+      <div class="market-grid" id="market-grid"></div>
+    </section>
+
   </main>
 
   <!-- Add/Edit Asset Modal -->
@@ -165,5 +194,6 @@
 
   <script src="/static/js/api.js"></script>
   <script src="/static/js/dashboard.js"></script>
+  <script src="/static/js/market.js"></script>
 </body>
 </html>

@@ -190,6 +190,34 @@ async def _fetch_crypto(ids: str) -> dict:
     return result
 
 
+@router.get("/crypto-history")
+async def get_crypto_history(
+    id: str = Query(..., description="CoinGecko coin ID, e.g. bitcoin"),
+    days: int = Query(default=1, description="Number of days (1, 7, 30)"),
+    current_user: models.User = Depends(get_current_user)
+):
+    cache_key = f"crypto-history:{id}:{days}"
+    cached = _get_cached(cache_key)
+    if cached:
+        return cached
+
+    url = f"{settings.coingecko_base_url}/coins/{id}/market_chart"
+    params = {"vs_currency": "usd", "days": days}
+
+    async with httpx.AsyncClient(timeout=15) as client:
+        try:
+            resp = await client.get(url, params=params)
+            resp.raise_for_status()
+            data = resp.json()
+        except httpx.HTTPError as e:
+            raise HTTPException(status_code=502, detail=f"CoinGecko API error: {str(e)}")
+
+    result = {"id": id, "prices": data.get("prices", [])}
+    # Cache history longer (5 min) — it's heavier data
+    _cache[cache_key] = (result, time.time() + 240)
+    return result
+
+
 async def _fetch_stock(symbol: str) -> dict:
     cache_key = f"stock:{symbol}"
     cached = _get_cached(cache_key)

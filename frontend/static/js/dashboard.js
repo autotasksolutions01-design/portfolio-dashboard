@@ -38,8 +38,11 @@ document.querySelectorAll(".nav-item").forEach((item) => {
     document.querySelectorAll(".content-section").forEach((s) => s.classList.remove("active"));
     item.classList.add("active");
     document.getElementById(`section-${section}`).classList.add("active");
-    document.getElementById("section-title").textContent =
-      section === "overview" ? "Overview" : "Assets";
+    const titles = { overview: "Overview", assets: "Assets", market: "Market" };
+    document.getElementById("section-title").textContent = titles[section] || section;
+    document.getElementById("add-asset-btn").style.display = section === "market" ? "none" : "";
+    document.getElementById("refresh-btn").style.display  = section === "market" ? "none" : "";
+    document.getElementById("last-updated").style.display = section === "market" ? "none" : "";
   });
 });
 
